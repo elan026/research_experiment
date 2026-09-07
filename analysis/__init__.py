@@ -1,0 +1,1 @@
+"""Analysis package: summaries, plots and the results report."""
