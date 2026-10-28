@@ -30,7 +30,7 @@ from analysis.plots import (  # noqa: E402
     plot_warnings,
 )
 from analysis.report import generate_html_gallery, generate_report  # noqa: E402
-from data.make_data import generate_trips  # noqa: E402
+from data import generate_trips, load_real_trips  # noqa: E402
 from guideline_layer import GuidelineConfig  # noqa: E402
 from models import MODEL_REGISTRY, TARGET_COL, load_model  # noqa: E402
 from models.eta_models import MLP_HIDDEN_DEFAULT, build_mlp  # noqa: E402
@@ -41,8 +41,10 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--quick", action="store_true",
                    help="small data + fewer boosting iterations for fast iteration")
-    p.add_argument("--days", type=int, default=None, help="days of synthetic data")
-    p.add_argument("--trips", type=int, default=None, help="trips per day")
+    p.add_argument("--dataset", type=str, choices=["real", "synthetic"], default="real",
+                   help="dataset choice: 'real' (empirical ISCON-PDPU dataset) or 'synthetic'")
+    p.add_argument("--days", type=int, default=None, help="days of synthetic data (synthetic mode)")
+    p.add_argument("--trips", type=int, default=None, help="trips per day (synthetic mode)")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--models", type=str, default="linear,gradient_boosting,mlp",
                    help="comma-separated models from: " + ",".join(MODEL_REGISTRY))
@@ -88,17 +90,26 @@ def main() -> None:
     t0 = time.perf_counter()
 
     # ---------------------------------------------------------------- data
-    print(f"[1/5] Generating synthetic data ({days} days x {trips} trips/day)...")
-    df = generate_trips(days, trips, args.seed)
-
-    # split by trip to avoid leakage
-    trips_all = df["trip_id"].unique()
-    rng = __import__("numpy").random.default_rng(args.seed)
-    test_trips = set(rng.choice(trips_all, size=int(len(trips_all) * 0.2), replace=False))
-    test_df = df[df["trip_id"].isin(test_trips)].reset_index(drop=True)
-    train_df = df[~df["trip_id"].isin(test_trips)].reset_index(drop=True)
+    if args.dataset == "real":
+        print("[1/5] Loading real empirical data (ISCON-PDPU corridor)...")
+        df = load_real_trips()
+        trips_all = df["trip_id"].unique()
+        rng = __import__("numpy").random.default_rng(args.seed)
+        test_trips = set(rng.choice(trips_all, size=max(1, int(len(trips_all) * 0.25)), replace=False))
+        test_df = df[df["trip_id"].isin(test_trips)].reset_index(drop=True)
+        train_df = df[~df["trip_id"].isin(test_trips)].reset_index(drop=True)
+        data_desc = f"Real empirical corridor dataset ({df['trip_id'].nunique()} trips, {len(df)} stop-obs)"
+    else:
+        print(f"[1/5] Generating synthetic data ({days} days x {trips} trips/day)...")
+        df = generate_trips(days, trips, args.seed)
+        trips_all = df["trip_id"].unique()
+        rng = __import__("numpy").random.default_rng(args.seed)
+        test_trips = set(rng.choice(trips_all, size=int(len(trips_all) * 0.2), replace=False))
+        test_df = df[df["trip_id"].isin(test_trips)].reset_index(drop=True)
+        train_df = df[~df["trip_id"].isin(test_trips)].reset_index(drop=True)
+        data_desc = f"{days} days x {trips} trips/day, seed {args.seed}"
     y_train = train_df[TARGET_COL]
-    print(f"       {len(train_df)} train / {len(test_df)} test stop-observations")
+    print(f"       {len(train_df)} train / {len(test_df)} test stop-observations ({len(test_trips)} test trips)")
 
     # --------------------------------------------------------------- train
     print("[2/5] Training ETA models...")
@@ -136,7 +147,6 @@ def main() -> None:
     plot_warnings(rows, plots_dir)
 
     write_summary_csv(rows, args.out / "analysis" / "summary.csv")
-    data_desc = f"{days} days x {trips} trips/day, seed {args.seed}"
     report_path = generate_report(rows, all_results, config, data_desc,
                                   args.out / "report.md")
     gallery_path = generate_html_gallery(rows, report_path)
