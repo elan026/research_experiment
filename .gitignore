@@ -4,3 +4,5 @@ __pycache__/
 results/
 data/*.csv
 Dataset for Advanced Public Transportation System under Limited Infrastructure Support/
+backend/node_modules/*
+frontend/node_modules/*

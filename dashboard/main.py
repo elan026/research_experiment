@@ -147,6 +147,7 @@ async def api_presets() -> dict:
 
 class RunParams(BaseModel):
     preset: Optional[str] = None
+    dataset: Optional[str] = None
     models: Optional[list[str]] = None
     days: Optional[int] = None
     trips: Optional[int] = None
@@ -156,8 +157,11 @@ class RunParams(BaseModel):
 
 @app.post("/api/run")
 async def api_run(params: RunParams) -> JSONResponse:
-    base = dict(PRESETS[params.preset]) if params.preset in PRESETS else dict(PRESETS["demo"])
-    if params.models is not None:
+    preset_key = params.preset if params.preset in PRESETS else "real"
+    base = dict(PRESETS[preset_key])
+    if params.dataset is not None:
+        base["dataset"] = params.dataset
+    if params.models:
         base["models"] = params.models
     if params.days is not None:
         base["days"] = params.days
@@ -176,8 +180,12 @@ async def api_run(params: RunParams) -> JSONResponse:
         return JSONResponse({"ok": False,
                              "error": f"Unknown model(s): {', '.join(unknown)}"}, status_code=400)
     base["models"] = list(dict.fromkeys(models))
-    base["days"] = max(1, min(int(base["days"]), 60))
-    base["trips"] = max(1, min(int(base["trips"]), 40))
+    if base.get("dataset") != "real":
+        base["days"] = max(1, min(int(base.get("days", 10)), 60))
+        base["trips"] = max(1, min(int(base.get("trips", 10)), 40))
+    else:
+        base["days"] = int(base.get("days", 0))
+        base["trips"] = int(base.get("trips", 9))
     base["seed"] = max(0, int(base["seed"]))
     base["speed_ms"] = max(0, min(int(base.get("speed_ms", 0)), 2000))
 

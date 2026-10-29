@@ -1,0 +1,12 @@
+{
+  "name": "guideline-layer-platform",
+  "version": "1.0.0",
+  "description": "Guideline Layer for ETA Prediction in Smart Transportation - Resource-Aware Edge AI Platform",
+  "scripts": {
+    "prestart": "powershell -NoProfile -Command \"Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Milliseconds 500\"",
+    "start": "node backend/server.js",
+    "build": "npm --prefix frontend run build",
+    "dev:frontend": "npm --prefix frontend run dev"
+  }
+}
+

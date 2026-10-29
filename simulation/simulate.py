@@ -142,6 +142,9 @@ def simulate_model(
                  violations=[v.to_dict() for v in check.violations],
                  alerts=[w.to_dict() for w in check.warnings],
                  synced=synced,
+                 dist_remaining_km=round(float(stop.get("dist_remaining_km", 0.0)), 2),
+                 avg_speed_kmh=round(float(stop.get("avg_speed_so_far_kmh", 0.0)), 1),
+                 direction=str(stop.get("direction", "NB")),
                  )
 
     result.wall_seconds = time.perf_counter() - t0

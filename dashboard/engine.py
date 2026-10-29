@@ -33,7 +33,8 @@ from typing import Any, Callable, Optional
 import numpy as np
 
 from analysis.analyze import summarize_run
-from data.make_data import N_STOPS, generate_trips
+from data import generate_trips, load_real_trips
+from data.make_data import N_STOPS
 from guideline_layer import GuidelineConfig
 from models import MODEL_REGISTRY, TARGET_COL, load_model
 from simulation import simulate_model
@@ -47,18 +48,27 @@ RES_DIR = ROOT / "results" / "dashboard"
 # well, so it is omitted there by default.
 # --------------------------------------------------------------------------
 PRESETS: dict[str, dict] = {
-    "quick": {
-        "label": "Quick (plumbing check)",
-        "days": 3, "trips": 4, "seed": 42, "speed_ms": 20,
-        "models": ["linear", "gradient_boosting"],
+    "real": {
+        "label": "Real Data (ISCON-PDPU)",
+        "dataset": "real",
+        "days": 0, "trips": 9, "seed": 42, "speed_ms": 35,
+        "models": ["linear", "gradient_boosting", "mlp"],
     },
     "demo": {
-        "label": "Demo (recommended)",
+        "label": "Synthetic Demo",
+        "dataset": "synthetic",
         "days": 10, "trips": 10, "seed": 42, "speed_ms": 40,
         "models": ["linear", "gradient_boosting", "mlp"],
     },
+    "quick": {
+        "label": "Synthetic Quick",
+        "dataset": "synthetic",
+        "days": 3, "trips": 4, "seed": 42, "speed_ms": 20,
+        "models": ["linear", "gradient_boosting"],
+    },
     "full": {
-        "label": "Full benchmark",
+        "label": "Synthetic Full",
+        "dataset": "synthetic",
         "days": 20, "trips": 14, "seed": 42, "speed_ms": 0,
         "models": ["linear", "gradient_boosting", "mlp"],
     },
@@ -194,7 +204,11 @@ class RunEngine:
     def _worker(self, params: dict) -> None:
         self._t0 = time.perf_counter()
         models = list(params["models"])
-        days, trips, seed = int(params["days"]), int(params["trips"]), int(params["seed"])
+        preset_name = params.get("preset", "real")
+        dataset = str(params.get("dataset", "real" if preset_name == "real" else "synthetic"))
+        days = int(params.get("days", 0))
+        trips = int(params.get("trips", 0))
+        seed = int(params.get("seed", 42))
         speed_ms = float(params.get("speed_ms", 0))
         try:
             emit = lambda ev: self._emit(ev, speed_ms)  # noqa: E731
@@ -206,29 +220,53 @@ class RunEngine:
                 shutil.rmtree(RES_DIR)
             RES_DIR.mkdir(parents=True, exist_ok=True)
 
-            emit({"kind": "data_start", "text":
-                  f"Step 1/4 - generating {days} days x {trips} trips/day of "
-                  f"synthetic bus data (seed {seed})..."})
-            df = generate_trips(days, trips, seed)
-            rng = np.random.default_rng(seed)
-            trips_all = df["trip_id"].unique()
-            test_trips = set(rng.choice(
-                trips_all, size=int(len(trips_all) * 0.2), replace=False))
-            test_df = df[df["trip_id"].isin(test_trips)].reset_index(drop=True)
-            train_df = df[~df["trip_id"].isin(test_trips)].reset_index(drop=True)
-            y_train = train_df[TARGET_COL]
-            n_test_trips = len(test_trips)
-            emit({"kind": "data_done", "text":
-                  f"Dataset ready: {len(train_df)} training observations across "
-                  f"{len(trips_all) - n_test_trips} trips; {len(test_df)} "
-                  f"held-out test observations across {n_test_trips} trips. "
-                  "The models have never seen the test trips - that is how we "
-                  "measure real prediction error.",
-                  "train_n": int(len(train_df)), "test_n": int(len(test_df)),
-                  "n_test_trips": n_test_trips,
-                  "expected_inferences": n_test_trips * N_STOPS * len(models),
-                  "days": days, "trips": trips, "seed": seed,
-                  "total_trips": int(len(trips_all))})
+            if dataset == "real":
+                emit({"kind": "data_start", "text":
+                      "Step 1/4 - loading real empirical ISCON-PDPU corridor dataset (36 trips)..."})
+                df = load_real_trips()
+                rng = np.random.default_rng(seed)
+                trips_all = df["trip_id"].unique()
+                test_trips = set(rng.choice(
+                    trips_all, size=max(1, int(len(trips_all) * 0.25)), replace=False))
+                test_df = df[df["trip_id"].isin(test_trips)].reset_index(drop=True)
+                train_df = df[~df["trip_id"].isin(test_trips)].reset_index(drop=True)
+                y_train = train_df[TARGET_COL]
+                n_test_trips = len(test_trips)
+                expected_inf = len(test_df) * len(models)
+                emit({"kind": "data_done", "text":
+                      f"Real empirical dataset ready: {len(train_df)} training observations across "
+                      f"{len(trips_all) - n_test_trips} trips; {len(test_df)} "
+                      f"held-out test observations across {n_test_trips} empirical trips. "
+                      "The models will predict arrival times along the real ISCON-PDPU bus corridor.",
+                      "train_n": int(len(train_df)), "test_n": int(len(test_df)),
+                      "n_test_trips": n_test_trips,
+                      "expected_inferences": expected_inf,
+                      "days": 0, "trips": n_test_trips, "seed": seed,
+                      "total_trips": int(len(trips_all))})
+            else:
+                emit({"kind": "data_start", "text":
+                      f"Step 1/4 - generating {days} days x {trips} trips/day of "
+                      f"synthetic bus data (seed {seed})..."})
+                df = generate_trips(days, trips, seed)
+                rng = np.random.default_rng(seed)
+                trips_all = df["trip_id"].unique()
+                test_trips = set(rng.choice(
+                    trips_all, size=int(len(trips_all) * 0.2), replace=False))
+                test_df = df[df["trip_id"].isin(test_trips)].reset_index(drop=True)
+                train_df = df[~df["trip_id"].isin(test_trips)].reset_index(drop=True)
+                y_train = train_df[TARGET_COL]
+                n_test_trips = len(test_trips)
+                emit({"kind": "data_done", "text":
+                      f"Dataset ready: {len(train_df)} training observations across "
+                      f"{len(trips_all) - n_test_trips} trips; {len(test_df)} "
+                      f"held-out test observations across {n_test_trips} trips. "
+                      "The models have never seen the test trips - that is how we "
+                      "measure real prediction error.",
+                      "train_n": int(len(train_df)), "test_n": int(len(test_df)),
+                      "n_test_trips": n_test_trips,
+                      "expected_inferences": n_test_trips * N_STOPS * len(models),
+                      "days": days, "trips": trips, "seed": seed,
+                      "total_trips": int(len(trips_all))})
 
             trained = {}
             for name in models:

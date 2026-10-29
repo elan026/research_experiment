@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Guideline Layer · Live Simulator</title>
+<title>Smart Transit Digital Twin · Cyber-Physical Operations Platform</title>
 <link rel="stylesheet" href="/static/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -13,125 +13,149 @@
   <div class="brand">
     <div class="logo" aria-hidden="true">
       <svg viewBox="0 0 40 40" width="40" height="40">
-        <circle cx="20" cy="20" r="17" fill="none" stroke="#4f46e5" stroke-width="3" stroke-dasharray="5 3"/>
-        <circle cx="20" cy="20" r="8" fill="#4f46e5"/>
-        <circle cx="20" cy="20" r="3" fill="#fff"/>
-        <path d="M20 3v6M20 31v6M3 20h6M31 20h6" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="17" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-dasharray="4 3"/>
+        <circle cx="20" cy="20" r="10" fill="none" stroke="#0ea5e9" stroke-width="2"/>
+        <circle cx="20" cy="20" r="5" fill="#4f46e5"/>
+        <path d="M20 2v5M20 33v5M2 20h5M33 20h5" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
     </div>
     <div>
-      <h1>Guideline Layer <span class="accent">Live Simulator</span></h1>
-      <p class="tagline">Watch the resource-aware guard layer monitor ETA predictions on a bus route — in plain English.</p>
+      <h1>Transit Digital Twin <span class="accent">Operations Center</span></h1>
+      <p class="tagline">Cyber-Physical Fleet Shadow · ISCON-PDPU Corridor Telemetry & Resource-Aware Edge AI</p>
     </div>
   </div>
+  <div class="twin-badges">
+    <span class="twin-badge"><span class="pulse-dot"></span>Transit Twin: Synchronized</span>
+    <span class="twin-badge hardware">Hardware Twin: Microprocessor Emulated</span>
+    <span class="twin-badge policy">Closed-Loop: Guard Layer ON</span>
+  </div>
   <nav class="tabs" id="tabnav">
-    <button class="tab active" data-tab="learn">Learn</button>
-    <button class="tab" data-tab="live">Live run</button>
-    <button class="tab" data-tab="results">Results</button>
-    <button class="tab" data-tab="logs">Logs</button>
+    <button class="tab" data-tab="learn">Twin Architecture</button>
+    <button class="tab active" data-tab="live">Live Telemetry</button>
+    <button class="tab" data-tab="results">Analytics & Verdict</button>
+    <button class="tab" data-tab="logs">Telemetry Logs</button>
   </nav>
   <div class="runpill idle" id="runpill"><span class="dot"></span><span id="runpill-text">Idle</span></div>
 </header>
 
 <main>
-  <!-- ============================================================ LEARN -->
-  <section id="tab-learn" class="tab-panel active">
+  <!-- ============================================================ TWIN ARCHITECTURE -->
+  <section id="tab-learn" class="tab-panel">
     <div class="hero card">
       <div>
-        <h2>Why this demo exists</h2>
-        <p>A bus-arrival app needs two things to actually ship:</p>
+        <h2>Cyber-Physical Digital Twin for Smart Transportation</h2>
+        <p>A true Digital Twin links a <b>Physical Asset</b> to a <b>Synchronized Virtual Model</b> via a <b>Bi-directional Closed Loop</b>. This platform implements a dual-state Digital Twin for public transit under limited infrastructure:</p>
         <ul class="plain">
-          <li><b>Good predictions</b> — how close the “bus arrives in X minutes” message is to reality.</li>
-          <li><b>To fit on the device</b> — the prediction model runs on a cheap, battery-powered computer inside the bus (or on a phone). That computer has strict limits: not too much CPU, memory, battery or network.</li>
+          <li><b>Transit Physical Twin (Spatial State)</b>: Mirrors the real bus's location, speed, and stop arrivals along the 32 km ISCON ↔ PDPU corridor, generating dynamic arrival estimates (ETA).</li>
+          <li><b>Edge Hardware Twin (Cyber-Physical State)</b>: Virtualizes the on-board IoT computer (Android / ESP32 unit), continuously tracking sustained CPU load, memory footprint, battery drain, and cellular bandwidth.</li>
+          <li><b>Closed-Loop Guard Layer (Actuation)</b>: Prevents edge hardware exhaustion by evaluating operational benchmarks (e.g. CPU &le; 30%) and issuing real-time remediation directives (model pruning, quantization, or switching to lightweight models).</li>
         </ul>
-        <p class="muted">Researchers often only report <em>accuracy</em>. A brilliant model that drains the battery in an hour never makes it to a real bus. The paper this demo is based on proposes a <b>Guideline Layer</b>: a lightweight watch-dog that sits <em>next to</em> the model, measures these four limits on every single prediction, and shouts when one is broken.</p>
       </div>
       <div class="hero-card">
-        <div class="kpi"><b id="learn-n">3</b><span>prediction models</span></div>
-        <div class="kpi"><b>4</b><span>resource limits watched</span></div>
-        <div class="kpi"><b>1</b><span>bus route (18 stops)</span></div>
-        <p class="muted tiny">All numbers you will see are produced live by the Python simulation running in this server.</p>
+        <div class="kpi"><b>Level 3</b><span>Autonomous Closed-Loop Twin</span></div>
+        <div class="kpi"><b id="learn-n">3</b><span>AI Prediction Models</span></div>
+        <div class="kpi"><b>4</b><span>Hardware Vitals Supervised</span></div>
+        <div class="kpi"><b>15</b><span>Physical Corridor Stops</span></div>
+        <p class="muted tiny">Grounded in IEEE reference literature (Ref [18] XAI Digital Twin & Ref [4] IoT Bus Tracking).</p>
       </div>
     </div>
 
-    <h3 class="sec">The four modules of the Guideline Layer</h3>
+    <h3 class="sec">The Three Pillars of This Digital Twin</h3>
+    <div class="dt-arch">
+      <div class="dt-pillar p1">
+        <span class="dt-tag">Pillar 1 · Physical Entity</span>
+        <h4>Physical Asset & Sensors</h4>
+        <p class="muted">The real-world transit vehicle operating along the Ahmedabad–Gandhinagar corridor, equipped with an on-board IoT tracking node, GPS receiver, tri-axial accelerometer, and cellular antenna.</p>
+        <p class="example">Feeds: 1–2 Hz real GPS packets, velocity, and timestamp logs.</p>
+      </div>
+      <div class="dt-pillar p2">
+        <span class="dt-tag">Pillar 2 · Digital Shadow</span>
+        <h4>Dual-State Virtual Replica</h4>
+        <p class="muted">Software models running in synchrony with the bus: spatial route geometry (15 stops), dynamic machine learning ETA predictors (Linear, GBDT, MLP), and virtualized hardware thermal/compute emulators.</p>
+        <p class="example">Computes: Travel time predictions + per-inference compute MACs.</p>
+      </div>
+      <div class="dt-pillar p3">
+        <span class="dt-tag">Pillar 3 · Closed Loop</span>
+        <h4>Guideline Layer Actuation</h4>
+        <p class="muted">Continuous closed-loop feedback engine that supervises device limits. If deep models exceed device capacity, it triggers automated alerts and directives to re-configure the edge workload.</p>
+        <p class="example">Enforces: CPU &le; 30% · RAM &le; 500 MB · Battery &le; 20%/hr · BW &le; 1 MB/min.</p>
+      </div>
+    </div>
+
+    <h3 class="sec">The Four Closed-Loop Modules</h3>
     <div class="module-grid">
       <div class="card module">
         <div class="m-head"><span class="m-ico">1</span><div><h4>Monitoring Engine</h4><code>guideline_layer/monitoring.py</code></div></div>
-        <p>After every prediction, samples the four resources. Measures what a laptop can measure for real (time per prediction, model size on disk) and models what happens on the <em>target</em> device (an embedded computer).</p>
-        <p class="example">Example reading: <span class="mono">model = 0.9 MB · 8 ms per prediction</span></p>
+        <p>Ingests real-time telemetry from every inference cycle. Measures actual execution wall-time and model footprint, and models sustained hardware strain for embedded chipsets.</p>
+        <p class="example">Output: Per-inference CPU load, RAM allocation, and network bytes.</p>
       </div>
       <div class="card module">
         <div class="m-head"><span class="m-ico">2</span><div><h4>Threshold Checker</h4><code>guideline_layer/thresholds.py</code></div></div>
-        <p>Compares each reading against the four benchmarks proposed in the paper. No opinion, just a comparison: is CPU above 30%? Is the model bigger than 500 MB?</p>
-        <p class="example">Checks: CPU ≤ 30% · RAM ≤ 500 MB · battery ≤ 20%/hr · bandwidth ≤ 1 MB/min</p>
+        <p>Evaluates virtual telemetry against operational bounds (CPU &le; 30%, RAM &le; 500 MB, Battery &le; 20%/hr, Bandwidth &le; 1 MB/min) to detect micro-level bottlenecks.</p>
+        <p class="example">Checks: CPU ceiling (30%) · Thermal budget · Cellular quota.</p>
       </div>
       <div class="card module">
         <div class="m-head"><span class="m-ico">3</span><div><h4>Warning System</h4><code>guideline_layer/warnings.py</code></div></div>
-        <p>If a limit is broken, raises an <b>alert with a concrete fix</b> (“CPU too high — prune the model or use a lighter one”). A cooldown stops the same alert from spamming, and repeated breaches escalate to critical.</p>
-        <p class="example">432 alerts instead of 1,728 noisy violations in the reference run</p>
+        <p>Acts as the digital twin's control signal: issues prescriptive remediation directives (INT8 quantization, pruning, or model fallback) with cooldown deduplication.</p>
+        <p class="example">Action: "CPU exceeded 30% ceiling — switch to Gradient Boosting".</p>
       </div>
       <div class="card module">
         <div class="m-head"><span class="m-ico">4</span><div><h4>Logging Module</h4><code>guideline_layer/logging_module.py</code></div></div>
-        <p>Writes one lightweight log line per prediction and periodically “syncs” a summary to a cloud server (simulated by a local file) — the history an operator needs to spot slow resource leaks.</p>
-        <p class="example">Writes <span class="mono">results/dashboard/logs/*.jsonl</span></p>
+        <p>Maintains high-fidelity JSONL telemetry records on-device and synchronizes batched summaries with the cloud fleet twin for fleet-wide analytics.</p>
+        <p class="example">Writes: <code>results/dashboard/logs/*.jsonl</code> and cloud syncs.</p>
       </div>
     </div>
 
     <div class="card loop-card">
-      <h3 class="sec" style="margin-top:0">The closed loop — what happens at every single stop</h3>
+      <h3 class="sec" style="margin-top:0">The Digital Twin Feedback Loop (At Every Stop)</h3>
       <div class="loop">
-        <div class="loop-step"><span class="chip c1">1 · Observe</span><p>The bus reaches a stop → the model predicts the remaining minutes → the Monitoring Engine samples CPU, RAM, battery, bandwidth.</p></div>
+        <div class="loop-step"><span class="chip c1">1 · Ingest & Predict</span><p>Bus reaches a stop → Telemetry arrives → Virtual twin predicts remaining transit minutes and samples device load.</p></div>
         <div class="loop-arrow">→</div>
-        <div class="loop-step"><span class="chip c2">2 · Compare</span><p>The Threshold Checker compares each sample to the paper’s four limits.</p></div>
+        <div class="loop-step"><span class="chip c2">2 · Evaluate State</span><p>Threshold Checker compares hardware metrics against the operational ceiling.</p></div>
         <div class="loop-arrow">→</div>
-        <div class="loop-step"><span class="chip c3">3 · Act</span><p>If a limit is broken, the Warning System raises an alert that says <em>what</em> and <em>how to fix it</em>.</p></div>
+        <div class="loop-step"><span class="chip c3">3 · Actuate Policy</span><p>When thresholds are breached, the Warning System issues automated remediation policies.</p></div>
         <div class="loop-arrow">→</div>
-        <div class="loop-step"><span class="chip c4">4 · Log</span><p>Everything is logged; every 10th prediction is synced to the simulated cloud.</p></div>
+        <div class="loop-step"><span class="chip c4">4 · Synchronize Fleet</span><p>All telemetry is persisted and synchronized with the central fleet digital twin.</p></div>
       </div>
-      <p class="muted">The prediction model is <b>never modified</b>. The layer only watches — that is the paper’s central claim, and the Live Run tab shows it happening in real time.</p>
     </div>
 
-    <h3 class="sec">Words you will see, explained</h3>
+    <h3 class="sec">Key Architectural Concepts</h3>
     <div class="glossary">
-      <details><summary><b>ETA</b> — Estimated Time of Arrival</summary><p>The “bus arrives in X minutes” figure passengers see. Here the model predicts the remaining minutes to the end of the route at every stop.</p></details>
-      <details><summary><b>MAE</b> — the way we score predictions</summary><p>Mean Absolute Error: the average size of the mistake in seconds, ignoring direction. “MAE 34 s” = a typical prediction is off by about half a minute. Lower is better.</p></details>
-      <details><summary><b>CPU 30% limit</b> — why a number out of nowhere?</summary><p>The paper proposes 30% as a sane sustained-CPU ceiling for a small embedded device that also has to run the bus’s other software. It is a <em>starting point</em> you tune per device, not a law.</p></details>
-      <details><summary><b>Why is CPU “modelled” and not measured?</b></summary><p>This demo runs on a laptop, whose math libraries make even big neural networks look trivially fast. So the simulator estimates each model’s real compute cost (multiply–accumulate operations) and converts it to the CPU load the same model would cause on the paper’s target device class. Raw laptop timings are still logged — look in the Logs tab.</p></details>
-      <details><summary><b>Cooldown</b></summary><p>If a limit stays broken for 100 stops, the layer does not send 100 alerts — it alerts once, then waits 2 minutes (simulated) before alerting again. Repeated breaches escalate to <b>critical</b>.</p></details>
-      <details><summary><b>Quantization / pruning</b> — the suggested fixes</summary><p><b>Quantization</b> shrinks a model by storing its numbers with less precision (e.g. int8 instead of float32) → less RAM. <b>Pruning</b> removes connections the model barely uses → less CPU. Both are standard “make the model smaller” tricks the Warning System recommends.</p></details>
-      <details><summary><b>What is “the cloud” here?</b></summary><p>A simulated fleet server: log summaries are written to a local CSV that stands in for uploads to a real cloud. The Logs tab shows the files.</p></details>
-      <details><summary><b>Is the data real?</b></summary><p>The trips are synthetic but generated from a physics-based model of a bus corridor (segment lengths, speeds, peak-hour traffic, weather). It is ideal for <em>mechanism</em> demos: everything is reproducible with a fixed seed.</p></details>
+      <details><summary><b>Why is this a Digital Twin and not just a tracking app?</b></summary><p>A simple tracker only shows where an object is on a map. A Digital Twin creates a high-fidelity virtual representation of both the physical process (bus movement and arrival times) and the physical asset's cyber-physical state (CPU, memory, battery, temperature), connecting them via closed-loop feedback.</p></details>
+      <details><summary><b>Spatial Twin vs. Hardware Twin</b></summary><p>The Spatial Twin simulates route progression, traffic delays, and ETAs. The Hardware Twin simulates on-board computational health, ensuring the predictive model does not drain the vehicle's battery or crash the microprocessor.</p></details>
+      <details><summary><b>Why is the 30% CPU ceiling critical?</b></summary><p>On resource-constrained embedded edge devices (e.g. Raspberry Pi, ESP32, or vehicle tracking units), the microprocessor must concurrently handle ticketing, GPS ingestion, passenger counting, and radio communication. Exceeding 30% CPU causes thermal throttling, task queue backpressure, and system freezes.</p></details>
+      <details><summary><b>Dataset Authenticity</b></summary><p>The default data source is the real empirical ISCON–PDPU transit corridor dataset from Ahmedabad, India (36 recorded trips across 15 physical stops). Synthetic physics-based simulation is also available for stress-testing.</p></details>
     </div>
 
-    <p class="cta-line">Ready to see it happen? <button class="btn primary" data-goto="live">Go to the Live Run →</button></p>
+    <p class="cta-line">Ready to observe the twin in action? <button class="btn primary" data-goto="live">Go to Live Telemetry →</button></p>
   </section>
 
-  <!-- ============================================================ LIVE -->
-  <section id="tab-live" class="tab-panel">
+  <!-- ============================================================ LIVE TELEMETRY -->
+  <section id="tab-live" class="tab-panel active">
     <div class="card settings" id="card-settings">
       <div class="settings-row">
         <div class="field">
-          <label>Dataset size</label>
+          <label>Digital Twin Dataset</label>
           <div class="seg" id="preset-seg">
-            <button class="seg-btn" data-preset="quick">Quick</button>
-            <button class="seg-btn active" data-preset="demo">Demo</button>
-            <button class="seg-btn" data-preset="full">Full benchmark</button>
+            <button class="seg-btn active" data-preset="real">Real Data (ISCON-PDPU)</button>
+            <button class="seg-btn" data-preset="demo">Synthetic Demo</button>
+            <button class="seg-btn" data-preset="quick">Synthetic Quick</button>
+            <button class="seg-btn" data-preset="full">Synthetic Full</button>
           </div>
-          <p class="hint" id="preset-hint"></p>
+          <p class="hint" id="preset-hint">Real Data — 36 empirical bus trips along the ISCON-PDPU corridor (457 stop-observations), testing on held-out trips.</p>
         </div>
         <div class="field">
-          <label>Models to compare</label>
+          <label>Twin Prediction Models</label>
           <div class="chips" id="model-chips"></div>
-          <p class="hint">Each model runs the <em>same</em> unseen trips, watched by the layer.</p>
+          <p class="hint">Each model runs the identical unseen empirical trips under Guideline Layer supervision.</p>
         </div>
         <div class="field">
-          <label>Playback speed</label>
+          <label>Telemetry Playback Rate</label>
           <div class="speed">
-            <input type="range" id="speed" min="0" max="400" step="10" value="45">
-            <span class="speed-label" id="speed-label">45 ms / prediction</span>
+            <input type="range" id="speed" min="0" max="400" step="10" value="35">
+            <span class="speed-label" id="speed-label">35 ms / prediction</span>
           </div>
-          <p class="hint">0 = as fast as the computer can go.</p>
+          <p class="hint">0 = full computational speed.</p>
         </div>
       </div>
       <div class="settings-row sub">
@@ -141,185 +165,229 @@
           <label>Seed <input type="number" id="in-seed" min="0" max="999999" step="1"></label>
         </div>
         <div class="runbtns">
-          <button class="btn primary" id="btn-run">▶&nbsp; Start simulation</button>
+          <button class="btn primary" id="btn-run">▶&nbsp; Start Digital Twin</button>
           <button class="btn danger" id="btn-stop" disabled>■&nbsp; Stop</button>
         </div>
       </div>
     </div>
 
+    <!-- Live Telemetry HUD Bar -->
+    <div class="twin-hud">
+      <div class="twin-hud-card">
+        <span class="hud-label">Corridor Location</span>
+        <span class="hud-val" id="hud-stop">Waiting for trip…</span>
+      </div>
+      <div class="twin-hud-card">
+        <span class="hud-label">Distance Remaining</span>
+        <span class="hud-val" id="hud-dist">— km</span>
+      </div>
+      <div class="twin-hud-card">
+        <span class="hud-label">Estimated Speed</span>
+        <span class="hud-val" id="hud-speed">— km/h</span>
+      </div>
+      <div class="twin-hud-card">
+        <span class="hud-label">Twin ETA Prediction</span>
+        <span class="hud-val" id="hud-eta">— min</span>
+      </div>
+      <div class="twin-hud-card">
+        <span class="hud-label">Physical Ground Truth</span>
+        <span class="hud-val" id="hud-actual">— min</span>
+      </div>
+    </div>
+
     <div class="stepper" id="stepper">
-      <div class="step" data-s="1"><span class="n">1</span><div><b>Build dataset</b><small>synthetic bus history</small></div></div>
-      <div class="step" data-s="2"><span class="n">2</span><div><b>Train ETA models</b><small>on the laptop</small></div></div>
-      <div class="step" data-s="3"><span class="n">3</span><div><b>Simulate trips live</b><small>model + guideline layer</small></div></div>
-      <div class="step" data-s="4"><span class="n">4</span><div><b>Analyse results</b><small>accuracy vs resources</small></div></div>
+      <div class="step" data-s="1"><span class="n">1</span><div><b>Synchronize Telemetry</b><small>empirical corridor dataset</small></div></div>
+      <div class="step" data-s="2"><span class="n">2</span><div><b>Calibrate Twin Models</b><small>Linear, GBDT, MLP</small></div></div>
+      <div class="step" data-s="3"><span class="n">3</span><div><b>Replay Cyber-Physical Twin</b><small>spatial ETA + device vitals</small></div></div>
+      <div class="step" data-s="4"><span class="n">4</span><div><b>Actuate & Evaluate</b><small>policy verdict & recommendations</small></div></div>
     </div>
 
     <div class="statusline" id="statusline">
       <span class="pulse"></span>
-      <span id="status-text">Start a simulation to see the full pipeline run in real time.</span>
+      <span id="status-text">Start the Digital Twin simulation to observe real-time spatial and hardware telemetry.</span>
     </div>
 
     <div class="kpis" id="kpis">
-      <div class="kpi"><b id="k-inf">0</b><span>predictions made</span></div>
-      <div class="kpi warn"><b id="k-viol">0</b><span>limit violations found</span></div>
-      <div class="kpi bad"><b id="k-alert">0</b><span>alerts raised</span></div>
-      <div class="kpi"><b id="k-logs">0</b><span>log records written</span></div>
-      <div class="kpi"><b id="k-sync">0</b><span>cloud syncs</span></div>
+      <div class="kpi"><b id="k-inf">0</b><span>Twin Inferences</span></div>
+      <div class="kpi warn"><b id="k-viol">0</b><span>Hardware Limit Breaches</span></div>
+      <div class="kpi bad"><b id="k-alert">0</b><span>Remediation Directives</span></div>
+      <div class="kpi"><b id="k-logs">0</b><span>Telemetry Logs Persisted</span></div>
+      <div class="kpi"><b id="k-sync">0</b><span>Cloud Fleet Twin Syncs</span></div>
     </div>
 
     <div class="livegrid" id="livegrid">
       <div class="col main">
+        <!-- Spatial Twin Route Card -->
         <div class="card">
           <div class="card-head">
-            <h3>Route · live trip</h3>
+            <h3>Transit Physical Twin · Spatial Corridor (ISCON ↔ PDPU, 15 Stops)</h3>
             <div class="now-model" id="now-model">—</div>
           </div>
           <div class="routewrap">
-            <svg id="route" viewBox="0 0 940 150" preserveAspectRatio="none">
+            <svg id="route" viewBox="0 0 940 160" preserveAspectRatio="none">
               <defs>
                 <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                   <path d="M0 0L10 5L0 10z" fill="#cbd5e1"/>
                 </marker>
               </defs>
-              <line x1="60" y1="96" x2="880" y2="96" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round" marker-end="url(#arr)"/>
+              <line x1="60" y1="90" x2="880" y2="90" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round" marker-end="url(#arr)"/>
               <g id="stops"></g>
+              <g id="stop-labels"></g>
               <g id="busgroup">
-                <circle id="bus" r="13" cx="-50" cy="96" fill="#4f46e5" stroke="#fff" stroke-width="3"/>
+                <circle id="bus" r="13" cx="-50" cy="90" fill="#4f46e5" stroke="#fff" stroke-width="3"/>
                 <text id="bus-label" x="-60" y="-24" text-anchor="middle" class="bus-label">Trip 0/0 · stop 0</text>
               </g>
             </svg>
           </div>
-          <div class="routefoot"><span id="route-sub">Waiting for the first trip…</span><span id="route-tripno"></span></div>
+          <div class="routefoot"><span id="route-sub">Waiting for initial telemetry stream…</span><span id="route-tripno"></span></div>
         </div>
 
+        <!-- Predictive State Estimation Card -->
         <div class="card">
-          <div class="card-head"><h3>Prediction vs. reality on this trip</h3>
+          <div class="card-head">
+            <h3>Twin State Estimation · Predicted ETA vs Physical Ground Truth</h3>
             <div class="now-model" id="mae-pill">MAE —</div>
           </div>
-          <p class="hint">Minutes remaining to the end of the route, predicted at each stop (line) vs. what actually happened. The two lines should lie on top of each other.</p>
+          <p class="hint">Remaining transit duration to terminal predicted at each corridor stop (Twin ETA vs Ground-Truth Arrival Time).</p>
           <div class="sparkwrap">
             <svg id="spark" viewBox="0 0 600 170" preserveAspectRatio="none"></svg>
-            <div class="legend"><span class="lg pred">predicted</span><span class="lg act">actual</span></div>
+            <div class="legend"><span class="lg pred">Twin Predicted ETA</span><span class="lg act">Physical Ground Truth</span></div>
           </div>
         </div>
 
+        <!-- Closed-Loop Policy Actuator Card -->
         <div class="card">
-          <h3 class="card-head" style="border:0;padding:0 0 10px">The four modules right now</h3>
+          <h3 class="card-head" style="border:0;padding:0 0 10px">Closed-Loop Policy Engine (Guideline Layer)</h3>
           <div class="modbar" id="modbar">
-            <div class="mod" id="mod-monitor"><span class="mi">👁</span><b>Monitoring Engine</b><small>sampling resources…</small></div>
-            <div class="mod" id="mod-threshold"><span class="mi">⚖️</span><b>Threshold Checker</b><small>comparing to limits…</small></div>
-            <div class="mod" id="mod-warning"><span class="mi">🔔</span><b>Warning System</b><small>standing by…</small></div>
-            <div class="mod" id="mod-log"><span class="mi">💾</span><b>Logging Module</b><small>writing records…</small></div>
+            <div class="mod" id="mod-monitor"><span class="mi">📡</span><b>Monitoring Engine</b><small>sampling device telemetry…</small></div>
+            <div class="mod" id="mod-threshold"><span class="mi">⚖️</span><b>Threshold Checker</b><small>checking operational limits…</small></div>
+            <div class="mod" id="mod-warning"><span class="mi">🚨</span><b>Warning Actuator</b><small>issuing remediation directives…</small></div>
+            <div class="mod" id="mod-log"><span class="mi">☁️</span><b>Fleet Sync Module</b><small>replicating to cloud twin…</small></div>
           </div>
         </div>
       </div>
 
       <div class="col side">
+        <!-- Edge Hardware Twin Card -->
         <div class="card">
-          <h3 class="card-head">Resource meters</h3>
-          <p class="hint" id="meter-model-hint">Values shown are for the model the layer is currently watching.</p>
+          <h3 class="card-head">Edge Hardware Digital Twin (Microprocessor Vitals)</h3>
+          <p class="hint" id="meter-model-hint">Live hardware emulation for on-board edge unit.</p>
           <div id="meters"></div>
-          <p class="hint" id="meters-note">CPU / battery are modelled for the paper’s embedded target device — see the Learn tab.</p>
+          <p class="hint" id="meters-note">CPU and battery vitals calibrated to embedded edge device benchmarks.</p>
         </div>
 
+        <!-- Actuation Feed Card -->
         <div class="card narrator">
-          <h3 class="card-head">What just happened?</h3>
+          <h3 class="card-head">Digital Twin Event & Actuation Feed</h3>
           <div id="narrator" class="narrator-list">
-            <p class="muted">Events will appear here, translated into plain language.</p>
+            <p class="muted">Live telemetry and policy actuation directives will stream here.</p>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Feed Card -->
     <div class="card feedcard">
       <div class="card-head">
-        <h3>Event feed</h3>
+        <h3>Digital Twin Raw Event Telemetry</h3>
         <div class="feedfilters" id="feed-filters">
           <button class="chipf active" data-f="all">All</button>
-          <button class="chipf" data-f="alert">Alerts</button>
+          <button class="chipf" data-f="alert">Actuation Directives</button>
           <button class="chipf" data-f="violation">Violations</button>
-          <button class="chipf" data-f="inference">Predictions</button>
+          <button class="chipf" data-f="inference">Twin Inferences</button>
           <button class="chipf" data-f="system">System</button>
         </div>
       </div>
-      <div class="feed" id="feed"><p class="muted">Nothing yet.</p></div>
+      <div class="feed" id="feed"><p class="muted">No telemetry logged yet.</p></div>
     </div>
   </section>
 
   <!-- ========================================================== RESULTS -->
   <section id="tab-results" class="tab-panel">
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <h3>Which model should actually go on the bus?</h3>
-          <p class="muted" id="results-meta">Run the Live simulation first — the comparison is computed from that run’s real numbers.</p>
-        </div>
-        <button class="btn ghost" id="btn-refresh-results">↻ Refresh</button>
-      </div>
-    </div>
     <div id="results-empty" class="card empty">
-      <p>No results yet.</p>
-      <button class="btn primary" data-goto="live">Run the simulation →</button>
+      <h3>No digital twin telemetry available</h3>
+      <p class="muted">Run the Digital Twin simulation from the Live Telemetry tab to generate model benchmarks and resource profiling.</p>
+      <button class="btn primary" data-goto="live">Go to Live Telemetry →</button>
     </div>
+
     <div id="results-body" hidden>
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <span id="results-meta" class="muted" style="font-size:13.5px;"></span>
+        <button class="btn ghost tiny" id="btn-refresh-results">↻ Refresh</button>
+      </div>
       <div class="verdicts" id="verdicts"></div>
 
       <div class="card chartcard">
-        <div class="chart-head"><h3>Accuracy vs. resource use — the whole story in one chart</h3>
-          <p class="hint">Bars left axis: typical prediction error (MAE, lower is better). Line right axis: sustained CPU load on the embedded device. The dashed red line is the paper’s 30% ceiling.</p></div>
+        <div class="chart-head">
+          <h3>Prediction Accuracy vs. Device CPU Footprint</h3>
+          <p class="hint">The optimal model maximizes predictive accuracy while respecting the 30% CPU ceiling on edge microprocessors.</p>
+        </div>
         <div class="chartbox"><canvas id="chart-acc-cpu"></canvas></div>
       </div>
 
       <div class="card chartcard">
-        <div class="chart-head"><h3>Where each model lands</h3>
-          <p class="hint">Good = bottom-right-ish is a lie… let’s be precise: <b>accurate models should sit low (small error)</b>. The green zone is accurate <em>and</em> under the CPU ceiling — that is where a model is deployable. The red zone is accurate but too hungry for the device.</p></div>
+        <div class="chart-head">
+          <h3>Digital Twin Feasibility Frontier (Error vs. CPU Load)</h3>
+          <p class="hint">Points to the left of the 30% ceiling are deployable on vehicle edge hardware; points to the right violate thermal and computing budgets.</p>
+        </div>
         <div class="chartbox"><canvas id="chart-scatter"></canvas></div>
       </div>
 
       <div class="card chartcard">
-        <div class="chart-head"><h3>What the layer caught</h3>
-          <p class="hint">Violations = single predictions that broke a limit. Alerts = the messages actually sent after the cooldown deduplicates them. Log records = everything written to disk.</p></div>
+        <div class="chart-head">
+          <h3>Closed-Loop Policy Enforcements (Limit Breaches vs. Alerts)</h3>
+          <p class="hint">Shows how the Guideline Layer deduplicates raw violations into actionable alerts via cooldowns.</p>
+        </div>
         <div class="chartbox"><canvas id="chart-caught"></canvas></div>
       </div>
 
-      <div class="card chartcard">
-        <div class="chart-head"><h3>Per-model report card</h3></div>
-        <div class="tablewrap"><table id="report-table">
-          <thead><tr><th>Model</th><th>MAE</th><th>RMSE</th><th>R²</th><th>CPU</th><th>RAM (model)</th><th>Battery</th><th>Bandwidth</th><th>Viol.</th><th>Alerts</th></tr></thead>
-          <tbody></tbody>
-        </table></div>
+      <div class="card">
+        <h3 class="card-head">Digital Twin Model Performance & Resource Matrix</h3>
+        <div class="tablewrap">
+          <table id="report-table">
+            <thead>
+              <tr>
+                <th>Model Architecture</th>
+                <th>MAE (s)</th>
+                <th>RMSE (s)</th>
+                <th>R²</th>
+                <th>Avg CPU %</th>
+                <th>Model RAM (MB)</th>
+                <th>Battery Drain (%/hr)</th>
+                <th>Bandwidth (KB/min)</th>
+                <th>Limit Breaches</th>
+                <th>Alerts Raised</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
 
       <div class="card verdict-prose" id="verdict-prose"></div>
-
-      <div class="card note">
-        <h3>Honest limitations</h3>
-        <ul class="plain">
-          <li><b>Synthetic data</b> — trips come from a seeded physics-based generator, not real GPS feeds. Numbers will shift run to run.</li>
-          <li><b>Modelled device resources</b> — CPU and battery are estimated for the paper’s embedded target device from the models’ structure. Raw per-prediction timings are measured for real on this laptop and logged.</li>
-          <li><b>Layer overhead ≈ 0</b> — measured in the CLI experiments (the layer only adds checks + a log line per prediction); it is not re-measured in every dashboard run to keep the demo fast.</li>
-        </ul>
-      </div>
     </div>
   </section>
 
-  <!-- ============================================================= LOGS -->
+  <!-- ============================================================ LOGS -->
   <section id="tab-logs" class="tab-panel">
     <div class="card">
-      <h3>Raw files written by this run</h3>
-      <p class="muted">Every event you saw on the Live Run tab was also written to disk by the real Logging Module. Refresh after a run to inspect them.</p>
-      <div class="seg" id="log-seg">
-        <button class="seg-btn active" data-log="inferences">inferences.jsonl</button>
-        <button class="seg-btn" data-log="warnings">warnings.jsonl</button>
-        <button class="seg-btn" data-log="cloud">fleet_log.csv (cloud)</button>
+      <div class="card-head">
+        <h3>Digital Twin Telemetry & Cloud Replicas</h3>
+        <div class="seg" id="log-seg">
+          <button class="seg-btn active" data-log="inferences">Inference Records</button>
+          <button class="seg-btn" data-log="warnings">Actuation Directives</button>
+          <button class="seg-btn" data-log="cloud">Cloud Fleet Twin</button>
+        </div>
       </div>
       <p class="hint" id="log-path"></p>
-      <pre class="logview" id="logview">Run a simulation, then come back here.</pre>
+      <pre class="logview" id="logview">Loading telemetry logs…</pre>
     </div>
   </section>
 </main>
 
-<footer class="foot muted">Freebuff Guideline Layer PoC · FastAPI + vanilla JS · the deck, report and CLI live next door in <span class="mono">results/</span> and <span class="mono">docs/</span></footer>
+<footer class="foot muted">
+  Smart Transit Digital Twin Platform · Cyber-Physical Edge AI Architecture · Grounded in IEEE ITS Research
+</footer>
 
 <script src="/static/app.js"></script>
 </body>

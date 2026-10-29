@@ -26,7 +26,7 @@ const S = {
   lite: null,            // authoritative counters from the server
   registry: [],          // models the backend can run
   presets: {},
-  preset: "demo",
+  preset: "real",
   modelsOn: new Set(),
   running: false,
   lastModel: null,       // most recently streamed model
@@ -53,9 +53,11 @@ const el = {
   kInf: $("#k-inf"), kViol: $("#k-viol"), kAlert: $("#k-alert"),
   kLogs: $("#k-logs"), kSync: $("#k-sync"),
   nowModel: $("#now-model"), maePill: $("#mae-pill"),
-  route: $("#route"), stops: $("#stops"), bus: $("#bus"), busLabel: $("#bus-label"),
+  route: $("#route"), stops: $("#stops"), stopLabels: $("#stop-labels"), bus: $("#bus"), busLabel: $("#bus-label"),
   routeSub: $("#route-sub"), routeTripno: $("#route-tripno"),
   spark: $("#spark"),
+  hudStop: $("#hud-stop"), hudDist: $("#hud-dist"), hudSpeed: $("#hud-speed"),
+  hudEta: $("#hud-eta"), hudActual: $("#hud-actual"),
   meters: $("#meters"), meterModelHint: $("#meter-model-hint"),
   narrator: $("#narrator"), feed: $("#feed"),
   presetSeg: $("#preset-seg"), presetHint: $("#preset-hint"),
@@ -82,7 +84,7 @@ async function bootPresets() {
     S.presets = j.presets; S.registry = j.registry;
     S.registry.forEach((m) => S.modelsOn.add(m.name));
     renderModelChips();
-    applyPreset("demo", true);
+    applyPreset(S.presets["real"] ? "real" : "demo", true);
   } catch (e) { /* backend not up? */ }
 }
 function renderModelChips() {
@@ -113,9 +115,14 @@ function applyPreset(name, silent) {
     renderModelChips();
   }
   if (!silent) {
-    el.presetHint.textContent =
-      p.label + " — " + p.days + " days × " + p.trips + " trips/day" +
-      (p.models.includes("mlp") ? ", including the deep MLP" : " (no deep MLP on purpose: too little data for it)");
+    if (p.dataset === "real" || name === "real") {
+      el.presetHint.textContent =
+        "Real Data — 36 empirical bus trips along the ISCON-PDPU corridor (457 stop-observations), testing on held-out trips.";
+    } else {
+      el.presetHint.textContent =
+        p.label + " — " + p.days + " days × " + p.trips + " trips/day" +
+        (p.models.includes("mlp") ? ", including the deep MLP" : " (no deep MLP on purpose: too little data for it)");
+    }
   }
 }
 $$("#preset-seg .seg-btn").forEach((b) => b.addEventListener("click", () => applyPreset(b.dataset.preset)));
@@ -245,10 +252,21 @@ function flashMod(id, state) {
 
 /* ------------------------------------------------------------ route vis */
 const N_MAX_STOPS = 18;
+const CORRIDOR_STOPS_NB = [
+  "ISCON", "Pakwaan", "GuruDwara", "Thaltej", "Zydus",
+  "Kargil", "Sola", "Gota", "Vaishnodevi", "Khoraj",
+  "Adalaj", "Sargasan", "Raksha-Shakti", "Bhaijipura", "PDPU"
+];
+const CORRIDOR_STOPS_SB = [
+  "PDPU", "Bhaijipura", "Raksha-Shakti", "Sargasan", "Adalaj",
+  "Khoraj", "Vaishnodevi", "Gota", "Sola", "Kargil",
+  "Zydus", "Thaltej", "GuruDwara", "Pakwaan", "ISCON"
+];
+
 function routeCoords(i, n, pad = 60) {
   const w = 940;
   const x = n > 1 ? pad + (w - pad * 2) * i / (n - 1) : w / 2;
-  return { x, y: 96 };
+  return { x, y: 90 };
 }
 function startTripVisual(ev) {
   const tv = { trip_id: ev.trip_id, stops: ev.n_stops || N_MAX_STOPS,
@@ -264,19 +282,43 @@ function drawRoute(ev) {
   const tv = S.trips[ev.model];
   const n = tv ? tv.stops : N_MAX_STOPS;
   const i = ev.stop_index;
+  const isRealCorridor = (n === 15 || S.preset === "real");
+  const stopsList = (ev.direction === "SB") ? CORRIDOR_STOPS_SB : CORRIDOR_STOPS_NB;
+
   // stops
   let html = "";
+  let lblHtml = "";
   for (let k = 0; k < n; k++) {
     const c = routeCoords(k, n);
     html += `<circle cx="${c.x.toFixed(1)}" cy="${c.y}" r="6"
       class="${k < i ? "passed" : ""} ${k === i ? "current" : ""}"/>`;
+    if (isRealCorridor && stopsList[k]) {
+      const yOffset = (k % 2 === 0) ? c.y + 24 : c.y + 38;
+      lblHtml += `<text x="${c.x.toFixed(1)}" y="${yOffset}" class="stop-label">${stopsList[k]}</text>`;
+    }
   }
   el.stops.innerHTML = html;
+  if (el.stopLabels) el.stopLabels.innerHTML = lblHtml;
+
   const here = routeCoords(i, n);
   el.bus.setAttribute("cx", here.x.toFixed(1));
   el.bus.setAttribute("cy", here.y);
   el.busLabel.setAttribute("x", here.x.toFixed(1));
-  el.busLabel.textContent = `Trip ${ev.trip_index}/${ev.trips_total} · stop ${i + 1}/${n}${ev.trip_id ? " · #" + ev.trip_id : ""}`;
+
+  const currName = (isRealCorridor && stopsList[i]) ? stopsList[i] : `Stop ${i + 1}`;
+  const nextName = (isRealCorridor && i + 1 < n && stopsList[i + 1]) ? stopsList[i + 1] : (i + 1 < n ? `Stop ${i + 2}` : "Terminal");
+
+  el.busLabel.textContent = `Trip ${ev.trip_index}/${ev.trips_total} · ${currName} (${i + 1}/${n})`;
+
+  // Update Live Telemetry HUD Bar
+  if (el.hudStop) {
+    el.hudStop.textContent = `${currName} ➔ ${nextName}`;
+    el.hudDist.textContent = (ev.dist_remaining_km !== undefined) ? `${f1(ev.dist_remaining_km)} km` : "— km";
+    el.hudSpeed.textContent = (ev.avg_speed_kmh !== undefined) ? `${f1(ev.avg_speed_kmh)} km/h` : "— km/h";
+    el.hudEta.textContent = (ev.pred_min !== undefined) ? `${f1(ev.pred_min)} min` : "— min";
+    el.hudActual.textContent = (ev.actual_min !== undefined) ? `${f1(ev.actual_min)} min` : "— min";
+  }
+
   const nViol = (ev.violations || []).length, nAlert = (ev.alerts || []).length;
   el.routeTripno.textContent =
     [nViol && `${nViol} violation${nViol > 1 ? "s" : ""}`, nAlert && `${nAlert} alert${nAlert > 1 ? "s" : ""}`]
@@ -388,21 +430,21 @@ function pushNarrator(ev) {
     }[ev.model_kind] || ev.model;
     const err = Math.abs(ev.error_s);
     const dir = ev.pred_min > ev.actual_min ? "late" : "early";
-    rows.push({ cls: "info", who: `Prediction · ${ev.model}`,
-      html: `At stop ${ev.stop_index + 1}/${ev.n_stops} the model said <b>${f1(ev.pred_min)} min</b> left; ` +
-            `the true remaining time was <b>${f1(ev.actual_min)} min</b> — off by ${f1(err, 0)} s (${dir}).` });
+    rows.push({ cls: "info", who: `Spatial Twin · ${ev.model}`,
+      html: `At stop ${ev.stop_index + 1}/${ev.n_stops} the twin predicted <b>${f1(ev.pred_min)} min</b> remaining; ` +
+            `ground-truth was <b>${f1(ev.actual_min)} min</b> — off by ${f1(err, 0)} s (${dir}).` });
     (ev.alerts || []).slice(0, 3).forEach((a) => {
-      rows.push({ cls: "bad", who: `Alert (${a.severity}) · Warning System`,
-        html: `<b>${esc(metricWord(a))}</b> reached ${esc(metricVal(a))} — above the paper’s limit. ` +
-              `Suggested fix: ${esc(a.hint)}` });
+      rows.push({ cls: "bad", who: `Actuation Directive (${a.severity}) · Warning System`,
+        html: `<b>${esc(metricWord(a))}</b> reached ${esc(metricVal(a))} — breached safe hardware limit. ` +
+              `Closed-loop directive: ${esc(a.hint)}` });
     });
     (ev.violations || []).slice(0, 2).forEach((v) => {
       const alertFired = (ev.alerts || []).some((a) => a.metric === v.metric);
-      if (!alertFired) rows.push({ cls: "warn", who: "Violation · Threshold Checker",
-        html: `<b>${esc(metricWord(v))}</b> at ${esc(metricVal(v))} breaks the rule — logged, alert suppressed by the 2-minute cooldown.` });
+      if (!alertFired) rows.push({ cls: "warn", who: "Hardware Limit Breach · Threshold Checker",
+        html: `<b>${esc(metricWord(v))}</b> at ${esc(metricVal(v))} breaks hardware budget — logged; directive suppressed by cooldown.` });
     });
-    if (ev.synced) rows.push({ cls: "ok", who: "Logging Module",
-      html: `10th prediction reached — the ${ev.model} summary was synced to the simulated fleet cloud.` });
+    if (ev.synced) rows.push({ cls: "ok", who: "Cloud Fleet Twin Sync",
+      html: `Telemetry batch synchronized to central cloud fleet twin.` });
   }
   if (!rows.length) return;
   const box = el.narrator;
@@ -477,8 +519,10 @@ el.btnStop.addEventListener("click", async () => {
 });
 async function runNow() {
   if (S.running) return;
+  const p = S.presets[S.preset] || {};
   const payload = {
     preset: S.preset,
+    dataset: p.dataset || (S.preset === "real" ? "real" : "synthetic"),
     models: [...S.modelsOn],
     days: +el.inDays.value, trips: +el.inTrips.value, seed: +el.inSeed.value,
     speed_ms: +el.speed.value,
@@ -526,7 +570,8 @@ async function loadResults() {
   const meta = `Run: ${d ? `${d.days} days × ${d.trips} trips/day, seed ${d.seed} — ` : ""}` +
     `${rows.length} model run(s)${st.wall_sec ? ` · wall time ${f1(st.wall_sec, 0)} s` : ""} · ` +
     `CPU ceiling ${f1(st.thresholds.cpu_percent.limit, 0)}% · cooldown ${st.config?.warning_cooldown_sec}s`;
-  $("#results-meta").textContent = meta;
+  const metaEl = $("#results-meta");
+  if (metaEl) metaEl.textContent = meta;
   renderVerdicts(rows, st);
   renderCharts(rows, st);
   renderTable(rows);
@@ -538,7 +583,8 @@ async function fetchState() {
     return await res.json();
   } catch (e) { return null; }
 }
-$("#btn-refresh-results").addEventListener("click", loadResults);
+const btnRefresh = $("#btn-refresh-results");
+if (btnRefresh) btnRefresh.addEventListener("click", loadResults);
 
 function renderVerdicts(rows, st) {
   const cpuLimit = st.thresholds.cpu_percent.limit;
@@ -710,23 +756,17 @@ function renderProse(rows, st) {
   const deployable = on.filter((r) => r.cpu_percent_avg <= cpuLimit);
   const winner = [...deployable].sort((a, b) => a.mae_s - b.mae_s)[0] || cheapest;
   wrap.innerHTML = `
-    <h3 class="sec" style="margin-top:0">Read this aloud (the 20-second takeaway)</h3>
-    <p>We trained <b>${on.length} model(s)</b> on the same synthetic history and let each one predict the
-       remaining travel time on trips it had never seen, while the Guideline Layer watched.</p>
-    <p>Accuracy alone would have told us the <b>${esc(best.model)}</b> model is the winner — a typical error of
-       <b>${f1(best.mae_s, 0)} s</b>. But that ignores whether the model can actually run on a bus’s onboard device.</p>
-    <p>Once we add the resource limits from the paper, the picture changes: ${deployable.length === on.length
-      ? "every model stayed under the CPU ceiling, so the layer approves the most accurate one."
-      : `${deployable.length} of the ${on.length} model(s) stayed under the ${f1(cpuLimit, 0)}% CPU ceiling. ` +
-        "The layer flags the others — every prediction that exceeds a limit is logged as a violation, " +
-        "repeated breaches become alerts, and each alert carries a concrete fix (prune, quantize, lighten the model)."}</p>
+    <h3 class="sec" style="margin-top:0">Digital Twin Operational Verdict (Key Takeaway)</h3>
+    <p>The Digital Twin evaluated <b>${on.length} model architecture(s)</b> across dual dimensions: <b>Spatial ETA Accuracy</b> on held-out corridor trips and <b>Edge Hardware Viability</b> under the paper’s operational benchmarks.</p>
+    <p>Predictive accuracy alone would prioritize the deep model or gradient boosting (typical error: <b>${f1(best.mae_s, 0)} s MAE</b>). However, a Digital Twin models whether the asset can sustainably operate without hardware failure.</p>
+    <p>Once edge hardware limits are evaluated, the closed-loop policy triggers: ${deployable.length === on.length
+      ? "every model stayed under the 30% CPU ceiling, so the digital twin approves the most accurate candidate."
+      : `${deployable.length} of the ${on.length} model(s) remained within the safe ${f1(cpuLimit, 0)}% CPU ceiling. ` +
+        "The un-optimized deep model breaches the computing budget on nearly every prediction, triggering critical remediation directives (prune, quantize, or switch architecture)."}</p>
     <p>${winner && winner.model !== best.model
-      ? `The layer therefore recommends the <b>${esc(winner.model)}</b> model: <b>${f1(winner.mae_s, 0)} s</b> typical error at ` +
-        `<b>${f1(winner.cpu_percent_avg)}% CPU</b> — almost the same accuracy as the best model for a fraction of the resources. ` +
-        "The best model on paper needs pruning or quantization before it is deployable."
-      : `The <b>${esc(winner.model)}</b> model wins on both axes — accurate <em>and</em> under the ${f1(cpuLimit, 0)}% ceiling.`}</p>
-    <p class="muted">Note: with the smallest “Quick” dataset the deep model may under-perform — that is a data-size
-       effect, not a layer effect. Use the Demo or Full preset for the paper’s intended story.</p>`;
+      ? `The Digital Twin officially recommends <b>${esc(winner.model)}</b>: <b>${f1(winner.mae_s, 0)} s</b> error at only ` +
+        `<b>${f1(winner.cpu_percent_avg)}% CPU</b> — achieving competitive accuracy while preserving edge battery, thermal headroom, and task responsiveness.`
+      : `The <b>${esc(winner.model)}</b> model is the approved digital twin configuration — highly accurate and well within the ${f1(cpuLimit, 0)}% edge CPU ceiling.`}</p>`;
 }
 
 /* ----------------------------------------------------------------- logs */

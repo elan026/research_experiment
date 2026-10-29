@@ -260,6 +260,28 @@ td.oknum { color:var(--ok); font-weight:700; }
 .logview .js { color:#fbbf24; } .logview .key { color:#7dd3fc; }
 .foot { max-width:1280px; margin:0 auto; padding:0 22px 30px; font-size:12.5px; }
 
+/* ------------------------------------------------------------- digital twin enhancements */
+.twin-badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.twin-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
+.twin-badge .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: blink 1.2s infinite; }
+.twin-badge.hardware { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+.twin-badge.policy { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+
+.twin-hud { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.twin-hud-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; display: flex; flex-direction: column; justify-content: center; }
+.twin-hud-card .hud-label { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--muted); letter-spacing: .4px; }
+.twin-hud-card .hud-val { font-size: 17px; font-weight: 800; font-family: var(--mono); color: var(--ink); margin-top: 2px; }
+
+.dt-arch { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+.dt-pillar { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); position: relative; }
+.dt-pillar.p1 { border-top: 4px solid var(--brand); }
+.dt-pillar.p2 { border-top: 4px solid var(--brand-2); }
+.dt-pillar.p3 { border-top: 4px solid var(--ok); }
+.dt-pillar h4 { margin: 0 0 6px; font-size: 15px; }
+.dt-tag { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: #f1f5f9; color: var(--muted); margin-bottom: 8px; }
+
+.stop-label { font-size: 9.5px; fill: #64748b; font-weight: 600; text-anchor: middle; }
+
 @media (max-width: 760px) {
   .hero { grid-template-columns: 1fr; }
   .tabs { order:3; width:100%; justify-content:center; }

@@ -28,6 +28,14 @@ class Thresholds:
     battery_drain_pct_hr: float = 20.0
     bandwidth_kb_per_min: float = 1024.0
 
+    def to_dict(self) -> dict:
+        return {
+            "cpu_percent": float(self.cpu_percent),
+            "ram_mb": float(self.ram_mb),
+            "battery_drain_pct_hr": float(self.battery_drain_pct_hr),
+            "bandwidth_kb_per_min": float(self.bandwidth_kb_per_min),
+        }
+
 
 @dataclass
 class GuidelineConfig:
